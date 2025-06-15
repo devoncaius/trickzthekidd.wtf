@@ -1,5 +1,6 @@
 # 🎧 trickzthekidd.wtf
 
+[![Live Site](https://img.shields.io/badge/Live%20Site-trickzthekidd.wtf-0ff?style=for-the-badge&logo=apache&logoColor=white)](https://trickzthekidd.wtf)
 ![GitHub repo size](https://img.shields.io/github/repo-size/devoncaius/trickzthekidd.wtf?color=0ff)
 ![GitHub issues](https://img.shields.io/github/issues/devoncaius/trickzthekidd.wtf?color=blue)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/devoncaius/trickzthekidd.wtf?color=violet)
