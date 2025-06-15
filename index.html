@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎧 trickzthekidd.wtf</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      text-align: center;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow: hidden;
+    }
+    canvas#bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+    body.light-mode {
+      background-color: #fefefe;
+      color: #111;
+    }
+    header {
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .button-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.25rem;
+      margin: 0.5rem;
+      border-radius: 999px;
+      background: linear-gradient(to right, #3a3a3a, #2a2a2a);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .button-link:hover {
+      background: #444;
+      transform: scale(1.05);
+    }
+    body.light-mode .button-link {
+      background: linear-gradient(to right, #ddd, #eee);
+      color: #111;
+    }
+    body.light-mode .button-link:hover {
+      background: #bbb;
+    }
+    audio {
+      width: 100%;
+      max-width: 400px;
+      outline: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+      margin-top: 1rem;
+      background-color: transparent;
+      padding: 0;
+    }
+    .switch-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      user-select: none;
+      z-index: 9999;
+      color: #f1f1f1;
+      transition: color 0.3s ease;
+    }
+    body.light-mode .switch-container {
+      color: #111;
+    }
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      display: inline-block;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      background-color: #ccc;
+      border-radius: 26px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: 0.4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="switch-container">
+    <label class="switch">
+      <input type="checkbox" id="modeToggle" />
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <header>
+    <h1>trickzthekidd</h1>
+    <p>listen to the new music 🌀</p>
+  </header>
+
+  <main>
+    <a class="button-link" href="https://soundcloud.com/user-655044210-364175481">🔊 SoundCloud</a>
+    <a class="button-link" href="https://instagram.com/samajones66">📸 Instagram</a>
+    <a class="button-link" href="player">🎧 Player</a>
+    <a class="button-link" href="upload">⬆️ Upload (admin)</a>
+
+    <section>
+      <h2>🎶 latest tracks</h2>
+      <p>Crazy</p>
+      <audio controls>
+        <source src="tracks/Crazy.mp3" type="audio/mp3" />
+        your browser doesn’t support the audio tag 😔
+      </audio>
+    </section>
+  </main>
+
+  <script>
+    const toggle = document.getElementById('modeToggle');
+    toggle.addEventListener('change', () => {
+      document.body.classList.toggle('light-mode', toggle.checked);
+    });
+
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let points = [];
+    let mouse = { x: null, y: null };
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    function initPoints() {
+      points = Array.from({ length: 100 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#888';
+        ctx.fill();
+
+        for (let j = i + 1; j < points.length; j++) {
+          const q = points[j];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = 'rgba(136, 136, 136,' + (1 - dist / 100) + ')';
+            ctx.stroke();
+          }
+        }
+
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = 'rgba(255, 255, 255,' + (1 - dist / 120) + ')';
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initPoints();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    resizeCanvas();
+    initPoints();
+    draw();
+
+    // SECRET KEY COMBO: cdf to go to secret page
+    let secret = '';
+    const code = 'cdf';
+
+    window.addEventListener('keydown', (e) => {
+      secret += e.key.toLowerCase();
+      if (!code.startsWith(secret)) {
+        secret = '';
+      }
+      if (secret === code) {
+        window.location.href = '/endcredits';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎧 trickzthekidd - admin</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      overflow: hidden;
+    }
+    canvas#bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    input[type="password"], input[type="file"] {
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      border: none;
+      margin: 0.5rem 0;
+      width: 280px;
+      background: #1e1e1e;
+      color: #fff;
+    }
+    button {
+      background: linear-gradient(145deg, #1f1f1f, #2b2b2b);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    button:hover {
+      background-color: #444;
+      transform: translateY(-2px);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1a1a1a;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+    }
+    #authMsg {
+      margin-top: 0.5rem;
+    }
+    #uploadSection {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    a.button-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.25rem;
+      margin-top: 1rem;
+      border-radius: 999px;
+      background: linear-gradient(to right, #3a3a3a, #2a2a2a);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    a.button-link:hover {
+      background: #444;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+
+  <header>
+    <h1>🔒 admin upload portal</h1>
+    <p>only yn's allowed 🚷</p>
+    <a class="button-link" href="/">🏠 back to home</a>
+  </header>
+
+  <main>
+    <div id="auth">
+      <p>enter password to continue:</p>
+      <input type="password" id="passwordInput" placeholder="password...">
+      <button onclick="checkPassword()">🔓 enter</button>
+      <p id="authMsg"></p>
+    </div>
+
+    <div id="uploadSection" style="display: none;">
+      <h2>upload new track 🎶</h2>
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="track" accept="audio/mp3">
+        <button type="submit">⬆️ upload</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    function checkPassword() {
+      const input = document.getElementById('passwordInput').value;
+      const msg = document.getElementById('authMsg');
+      if (input === 'trickzthekidd') {
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('uploadSection').style.display = 'block';
+      } else {
+        msg.textContent = 'hell nah 😤';
+        msg.style.color = 'red';
+      }
+    }
+
+    // floating dots bg w/ cursor interaction
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let points = [];
+    let mouse = { x: null, y: null };
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    function initPoints() {
+      points = Array.from({ length: 100 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#888';
+        ctx.fill();
+
+        for (let j = i + 1; j < points.length; j++) {
+          const q = points[j];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = 'rgba(136, 136, 136,' + (1 - dist / 100) + ')';
+            ctx.stroke();
+          }
+        }
+
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = 'rgba(255, 255, 255,' + (1 - dist / 120) + ')';
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initPoints();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    resizeCanvas();
+    initPoints();
+    draw();
+  </script>
+</body>
+</html>

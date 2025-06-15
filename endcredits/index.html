@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💔 End Credits - Secret Page</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0d0d0d;
+      color: #0ff;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    audio {
+      position: fixed;
+      bottom: 20px;
+      width: 80%;
+      z-index: 10;
+    }
+    .lyrics-viewport {
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    .lyrics-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.8s ease;
+    }
+    .line {
+      opacity: 0.1;
+      font-size: 3rem;
+      line-height: 4rem;
+      padding: 1.5rem;
+      max-width: 80vw;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      will-change: opacity, transform;
+    }
+    .line.active {
+      opacity: 1;
+      transform: scale(1.2);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="lyrics-viewport">
+    <div class="lyrics-container" id="lyrics"></div>
+  </div>
+  <audio id="audio" controls>
+    <source src="tracks\end_credits.mp3" type="audio/mpeg">
+    your browser does not support the audio element
+  </audio>
+
+  <script>
+    const lyrics = [
+      { time: 0.0, text: "When the blood dries in my veins" },
+      { time: 5.4, text: "And my heart feels no more pain" },
+      { time: 10.5, text: "I know, I'll be on my way" },
+      { time: 15.5, text: "To heaven's door" },
+      { time: 21.1, text: "I know when I knock" },
+      { time: 23.4, text: "I'll be hoping I don't drop" },
+      { time: 26.0, text: "To a place where I will rot, just like before" },
+      { time: 30.6, text: "I know when I knock" },
+      { time: 33.1, text: "I'll be hoping I don't drop" },
+      { time: 35.7, text: "To a place where I will rot, just like before" },
+      { time: 41.2, text: "I can feel something happening" },
+      { time: 44.0, text: "That I've never felt before" },
+      { time: 47.0, text: "Hopeless dreaming will start" },
+      { time: 50.0, text: "Dragging me away from heaven's door" },
+      { time: 54.8, text: "I can feel something happening" },
+      { time: 57.6, text: "That I've never felt before" },
+      { time: 60.5, text: "Hopeless dreaming will start" },
+      { time: 63.4, text: "Dragging me away from heaven's door" },
+      { time: 70.1, text: "When my mind stops thinking" },
+      { time: 72.7, text: "And my eyes stop blinking, I hope" },
+      { time: 76.0, text: "Somebody's there" },
+      { time: 79.5, text: "When my heart stops beating" },
+      { time: 82.3, text: "And my lungs stop breathing in air" },
+      { time: 85.4, text: "I hope somebody cares" },
+      { time: 91.0, text: "When the blood dries in my veins" },
+      { time: 95.9, text: "And my, heart feels no more pain" },
+      { time: 100.7, text: "I know, I'll be on my way" },
+      { time: 105.3, text: "To heaven's door" },
+      { time: 111.0, text: "I know when I knock" },
+      { time: 113.4, text: "I'll be hoping I don't drop" },
+      { time: 116.0, text: "To a place where I will rot, just like before" },
+      { time: 120.7, text: "I know when I knock" },
+      { time: 123.1, text: "I'll be hoping I don't drop" },
+      { time: 125.6, text: "To a place where I will rot, just like before" },
+      { time: 130.5, text: "I can feel something happening" },
+      { time: 133.4, text: "That I've never felt before" },
+      { time: 136.4, text: "Hopeless dreaming will start" },
+      { time: 139.5, text: "Dragging me away from heaven's door" },
+      { time: 145.6, text: "When my mind stops thinking" },
+      { time: 148.1, text: "And my eyes stop blinking, I hope" },
+      { time: 151.5, text: "Somebody's there" },
+      { time: 155.3, text: "When my heart stops beating" },
+      { time: 158.1, text: "And my lungs stop breathing in air" },
+      { time: 161.4, text: "I hope somebody cares" },
+      { time: 167.5, text: "When my mind stops thinking" },
+      { time: 169.8, text: "And my eyes stop blinking, I know" },
+      { time: 174.0, text: "At the end" },
+    ];
+
+    const lyricsContainer = document.getElementById("lyrics");
+    const audio = document.getElementById("audio");
+
+    lyrics.forEach((line) => {
+      const div = document.createElement("div");
+      div.className = "line";
+      div.textContent = line.text;
+      lyricsContainer.appendChild(div);
+    });
+
+    const lines = [...document.querySelectorAll(".line")];
+
+    let lastIndex = -1;
+    audio.ontimeupdate = () => {
+      const current = audio.currentTime;
+      let currentIndex = 0;
+
+      for (let i = 0; i < lyrics.length; i++) {
+        if (current >= lyrics[i].time) {
+          currentIndex = i;
+        } else {
+          break;
+        }
+      }
+
+      if (currentIndex !== lastIndex) {
+        lines.forEach((line, i) => {
+          line.classList.remove("active");
+          if (i === currentIndex) {
+            line.classList.add("active");
+          }
+        });
+
+        const offset = lines[currentIndex].offsetTop;
+        document.querySelector('.lyrics-container').style.transform = `translateY(-${offset - window.innerHeight / 2 + lines[currentIndex].clientHeight / 2}px)`;
+        lastIndex = currentIndex;
+      }
+    };
+  </script>
+</body>
+</html>

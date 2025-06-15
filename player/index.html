@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎧 trickzthekidd.wtf - player</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      text-align: center;
+      overflow: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    canvas#bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+    body.light-mode {
+      background-color: #fefefe;
+      color: #111;
+    }
+    header {
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      max-width: 400px;
+      width: 100%;
+      align-items: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    button.track-btn {
+      width: 100%;
+      max-width: 300px;
+      background: linear-gradient(to right, #3a3a3a, #2a2a2a);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    button.track-btn:hover {
+      background: #444;
+      transform: scale(1.05);
+    }
+    audio {
+      width: 100%;
+      max-width: 400px;
+      outline: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 12px rgba(255,255,255,0.1);
+    }
+    a.button-link {
+      margin-top: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      background: linear-gradient(to right, #3a3a3a, #2a2a2a);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    a.button-link:hover {
+      background: #444;
+      transform: scale(1.05);
+    }
+    .switch-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      user-select: none;
+      z-index: 9999;
+      color: #f1f1f1;
+      transition: color 0.3s ease;
+    }
+    body.light-mode .switch-container {
+      color: #111;
+    }
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      display: inline-block;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      background-color: #ccc;
+      border-radius: 26px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: 0.4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.4s ease;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    /* mobile responsive tweaks */
+    @media (max-width: 500px) {
+      body {
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .track-list button.track-btn,
+      a.button-link {
+        max-width: 90vw;
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+      }
+      audio {
+        max-width: 90vw;
+      }
+      .switch-container {
+        top: 10px;
+        right: 10px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="switch-container">
+    <label class="switch">
+      <input type="checkbox" id="modeToggle" />
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <header>
+    <h1>trickzthekidd</h1>
+    <p>listen to the new music 🌀</p>
+  </header>
+
+  <main>
+    <div class="track-list">
+      <button class="track-btn" data-src="tracks/Crazy.mp3">Crazy</button>
+      <button class="track-btn" data-src="tracks/Good Vibes.mp3">Good Vibes</button>
+      <button class="track-btn" data-src="tracks/Wishes.mp3">Wishes</button>
+    </div>
+
+    <audio controls id="player" src="tracks/">
+      your browser doesn’t support the audio tag 😔
+    </audio>
+
+    <p id="nowPlaying" style="margin-top: 1rem; font-weight: bold;">Now playing: Nothing</p>
+
+    <a class="button-link" href="/">🏠 back to home</a>
+  </main>
+
+  <script>
+    const toggle = document.getElementById('modeToggle');
+    toggle.addEventListener('change', () => {
+      document.body.classList.toggle('light-mode', toggle.checked);
+    });
+
+    const buttons = document.querySelectorAll('.track-btn');
+    const player = document.getElementById('player');
+    const nowPlaying = document.getElementById('nowPlaying');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const songName = btn.textContent;
+        player.src = btn.getAttribute('data-src');
+        player.play();
+        nowPlaying.textContent = `Now playing: ${songName}`;
+      });
+    });
+
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let points = [];
+    let mouse = { x: null, y: null };
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    function initPoints() {
+      points = Array.from({ length: 100 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#888';
+        ctx.fill();
+
+        for (let j = i + 1; j < points.length; j++) {
+          const q = points[j];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = 'rgba(136, 136, 136,' + (1 - dist / 100) + ')';
+            ctx.stroke();
+          }
+        }
+
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = 'rgba(255, 255, 255,' + (1 - dist / 120) + ')';
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initPoints();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    resizeCanvas();
+    initPoints();
+    draw();
+  </script>
+</body>
+</html>
